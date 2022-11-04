@@ -1,0 +1,28 @@
+const byAdmin = 'by-admin';
+
+export const AppRoutes = {
+    BASE: '/',
+    Register: '/register',
+    Verify: '/register/verify',
+    Login: '/login',
+    Player: `/player`,
+    Players: `/players/${byAdmin}`,
+    Admin: '/manage',
+    Admins: `/admins/${byAdmin}`,
+    CreateAdmin: '/create-admin',
+    DeletePlayer: '/delete-player/',
+    DeleteAdmin: '/delete-admin/',
+    ChangePassword: '/change-password/',
+    GetForgotPasswordCode: '/request-code',
+    ChangePasswordByCode: '/account-recovery',
+    Draws: `/draws/${byAdmin}`,
+    WinnersBoard: `/winners-board/`,
+    Transactions: `/transactions/${byAdmin}`,
+    Tickets: `/tickets/${byAdmin}`,
+    ProfileDetails: '/profile/',
+    PlayerTickets: '/tickets/',
+    PlayerTransactions: '/transactions/',
+    BuyCredits: '/buy-credits',
+    CreateTicket: '/player/create-ticket',
+    CreateTicketNonnregistered: '/create-ticket',
+}
