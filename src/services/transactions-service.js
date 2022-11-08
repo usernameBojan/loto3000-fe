@@ -19,3 +19,12 @@ export const getTransaction = async id => {
         return null;
     }
 }
+
+export const getTransactionsStatistics = async () => {
+    try {
+        const result = await LotoApi.get(APIRoutes.TransactionsStatistics, {Headers: authHeader()});
+        return result.data;
+    } catch (err) {
+        return null;
+    }
+}

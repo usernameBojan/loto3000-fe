@@ -57,7 +57,8 @@ export const accountRecovery = async inputs => {
 export const changePassword = async inputs => {
     try {
         return await LotoApi.post(APIRoutes.ChangePassword,
-            JSON.stringify(inputs), { headers: {'Content-Type': 'application/json'} }
+            JSON.stringify(inputs),
+            { headers: {'Content-Type': 'application/json'} }
         );
     } catch (err) {
         return null;
@@ -70,6 +71,24 @@ export const requestCode = async input => {
             JSON.stringify({ input }),
             { headers: { 'Content-Type': 'application/json' } }
         );
+    } catch (err) {
+        return null;
+    }
+}
+
+export const getPlayerTicketsStatistics = async () => {
+    try {
+        const result = await LotoApi.get(APIRoutes.PlayerTicketsStatistics, { Headers: authHeader() }); 
+        return result.data;
+    } catch (err) {
+        return null;
+    }
+}
+
+export const getPlayerTransactionsStatistics = async () => {
+    try {
+        const result = await LotoApi.get(APIRoutes.PlayerTransactionsStatistics, { Headers: authHeader() }); 
+        return result.data;
     } catch (err) {
         return null;
     }

@@ -15,5 +15,5 @@ export const AdminsTableWrapper = styled.div`
 export const WinnersTableWrapper = styled.div`
     width: 55%;
     height: 40rem;
-    margin: 5% auto;
+    margin: -5% auto;
 `;

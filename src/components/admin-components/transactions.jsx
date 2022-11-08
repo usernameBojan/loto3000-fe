@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { transactionsStatisticsDataByAdmin } from "../../consts/helpers/statistics-data";
 import { APIRoutes } from "../../consts/routes/api-routes";
 import { statisticsAlertStyle, StatisticsWrapper } from "../../consts/styles/statistics-style/statistics-style";
-import { getTransactions } from "../../services/transactions-service";
+import { getTransactions, getTransactionsStatistics } from "../../services/transactions-service";
 import NoDataAlert from "../shared/no-data-alert";
 import Statistics from "../shared/statistics";
 import TransactionsByAdminTabular from "./transactions/transactions-tabular";
@@ -13,7 +13,9 @@ const TransactionsByAdmin = () => {
     const [transactions, setTransactions] = useState([]);
     const [registeredPlayersTransactions, setRegisteredPlayersTransactions] = useState([]);
     const [nonregisteredPlayersTransactions, setNonregisteredPlayersTransactions] = useState([]);
+    const [statistics, setStatistics] = useState([]);
     const [isDisplayed, setIsDisplayed] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('No transactions yet!');
 
     useEffect(() => {
         getTransactions(APIRoutes.RegisteredPlayersTransactions).then(transactions => {
@@ -25,6 +27,12 @@ const TransactionsByAdmin = () => {
         getTransactions(APIRoutes.NonregisteredPlayersTransactions).then(transactions => {
             setNonregisteredPlayersTransactions(transactions);
         }).catch(x => console.log(x));
+    }, []);
+
+    useEffect(() => {
+        getTransactionsStatistics().then(stats => {
+            stats !== null ? setStatistics(stats) : setAlertMsg('No Server Response!')
+        })
     }, []);
 
     const handleHide = () => {
@@ -41,20 +49,11 @@ const TransactionsByAdmin = () => {
         setIsDisplayed(true);
     };
 
-    const statisticsData = {
-        registeredPlayersTransactions: registeredPlayersTransactions,
-        nonregisteredPlayersTransactions: nonregisteredPlayersTransactions,
-        registeredPlayersTransactionsAmount: registeredPlayersTransactions.length === 0 ? 0
-            : registeredPlayersTransactions.map(el => el.depositAmount).reduce((prev, cur) => prev + cur),
-        nonregisteredPlayersTransactionsAmount: nonregisteredPlayersTransactions.length === 0 ? 0
-            : nonregisteredPlayersTransactions.map(el => el.depositAmount).reduce((prev, cur) => prev + cur)
-    }
-
     return (
         <StatisticsWrapper>
             {registeredPlayersTransactions.length !== 0 || nonregisteredPlayersTransactions.length !== 0 ?
                 <>
-                    <Statistics style={statisticsAlertStyle.transactionsByAdmin} data={transactionsStatisticsDataByAdmin(statisticsData)} />
+                    <Statistics style={statisticsAlertStyle.transactionsByAdmin} data={transactionsStatisticsDataByAdmin(statistics)} />
                     <Box style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
                         <Button
                             sx={{ marginRight: '10px', marginBottom: '20px' }}
@@ -80,7 +79,7 @@ const TransactionsByAdmin = () => {
                     <Box style={{ display: isDisplayed ? 'block' : 'none', height: '50vh', width: '30%' }}>
                         <TransactionsByAdminTabular transactions={transactions} />
                     </Box>
-                </> : <NoDataAlert msg={'No transactions yet!'} />
+                </> : <NoDataAlert msg={alertMsg} />
             }
         </StatisticsWrapper>
     )

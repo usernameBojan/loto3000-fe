@@ -9,59 +9,55 @@ export const transactionsStatisticsData = values => (
         },
         {
             title: 'Transactions made',
-            value: values.transactions.length,
+            value: values.transactionsMade
         },
         {
             title: 'Total amount deposited',
-            value: values.transactions.map(el => el.depositAmount).reduce((prev, cur) => prev + cur)
+            value: values.totalAmountDeposited
         },
         {
             title: 'Bonus credits awarded',
-            value: values.transactions.length <= 9 ? 0 : parseInt(values.transactions.length / 10) * 100
+            value: values.bonusCreditsAwarded
         },
         {
             title: 'Highest amount deposited',
-            value: Math.max(...values.transactions.map(el => (el.depositAmount))),
+            value: values.highestAmountDeposited
         },
         {
             title: 'Lowest amount deposited',
-            value: Math.min(...values.transactions.map(el => (el.depositAmount))),
+            value: values.lowestAmountDeposited
         }
     ]
 )
 
 export const ticketsStatisticsData = values => {
-    const numOfActiveTickets = values.activeTickets.length;
-    const numOfWinningTickets = values.pastTickets.filter(el => el.prize >= 3).length;
-    const winningTickets = values.pastTickets.filter(el => el.prize >= 3);
-
     const prizesWon = [];
-
-    const hasPrize = num => numOfWinningTickets !== 0 || winningTickets.filter(el => el.prize === num).length !== 0;
+    const hasPrize = num => values.numberOfPrizesWon !== 0 || values.allTickets.filter(el => el.prize === num).length !== 0;
 
     for (let i = 7; i >= 3; i--) {
         prizesWon.push({
-            prize: !hasPrize(i) ? '' : winningTickets.filter(el => el.prize === i).length === 1 ? `${Prizes[i - 1]}'s` : Prizes[i - 1],
-            quantity: !hasPrize(i) ? '' : winningTickets.filter(el => el.prize === i).length
+            prize: !hasPrize(i) ? '' : values.allTickets.filter(el => el.prize === i).length === 1 ? `${Prizes[i - 1]}'s` : Prizes[i - 1],
+            quantity: !hasPrize(i) ? '' : values.allTickets.filter(el => el.prize === i).length
         })
     }
 
     return [
         {
             title: 'Tickets played',
-            value: values.allTickets.length,
+            value: values.ticketsPlayed,
         },
         {
             title: 'Active tickets',
-            value: numOfActiveTickets,
+            value: values.activeTickets,
         },
         {
             title: 'Number of prizes',
-            value: numOfWinningTickets,
+            value: values.numberOfPrizesWon,
         },
         {
             title: 'Prizes won',
-            value: numOfWinningTickets === 0 ? 'None' : prizesWon.map(el => <Typography>`${el.quantity} ${el.prize}`</Typography>)
+            value: true ? 'None' : values.numberOfPrizesWon === 0 ? 'None' 
+                : prizesWon.map(el => <Typography>`${el.quantity} ${el.prize}`</Typography>)
         }
     ]
 }
@@ -70,27 +66,27 @@ export const transactionsStatisticsDataByAdmin = values => (
     [
         {
             title: 'Total transactions',
-            value: values.registeredPlayersTransactions.length + values.nonregisteredPlayersTransactions.length
+            value: values.totalTransactions
         },
         {
             title: 'Registered players transactions',
-            value: values.registeredPlayersTransactions.length
+            value: values.registeredPlayersTransactions
         },
         {
             title: 'Nonegistered players transactions',
-            value: values.nonregisteredPlayersTransactions.length
+            value: values.nonregisteredPlayersTransactions
         },
         {
             title: 'Total deposited amount',
-            value: values.registeredPlayersTransactionsAmount + values.nonregisteredPlayersTransactionsAmount,
+            value: values.totalDepositedAmount,
         },
         {
             title: 'Registered players deposited amount',
-            value: values.registeredPlayersTransactionsAmount
+            value: values.registeredPlayersDepositedAmount
         },
         {
             title: 'Nonregistered players deposited amount',
-            value: values.nonregisteredPlayersTransactionsAmount
+            value: values.nonregisteredPlayersDepositedAmount
         }
     ]
 )
@@ -99,23 +95,23 @@ export const ticketsStatisticsDataByAdmin = values => (
     [
         {
             title: 'Total tickets',
-            value: values.allTickets.length
+            value: values.totalTickets
         },
         {
             title: 'Active tickets',
-            value: values.activeTickets.length
+            value: values.activeTickets
         },
         {
             title: 'Registered players tickets',
-            value: values.registeredPlayerTickets.length
+            value: values.registeredPlayersTickets
         },
         {
             title: 'Nonregistered players tickets',
-            value: values.nonregisteredPlayerTickets.length
+            value: values.nonregisteredPlayersTickets
         },
         {
             title: 'Number of total prizes won',
-            value: values.pastTickets.filter(ticket => ticket.prize >= 3).length
+            value: values.totalPrizesWon
         }
     ]
 )

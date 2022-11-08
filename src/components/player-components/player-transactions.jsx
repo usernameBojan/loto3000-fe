@@ -6,7 +6,7 @@ import { playerTansactionsColumns } from "../../consts/helpers/table-columns";
 import { APIRoutes } from "../../consts/routes/api-routes";
 import { statisticsAlertStyle, StatisticsWrapper } from "../../consts/styles/statistics-style/statistics-style";
 import { getTransactions } from "../../services/transactions-service";
-import { getUsers } from "../../services/user-service";
+import { getPlayerTransactionsStatistics } from "../../services/user-service";
 import NoDataAlert from "../shared/no-data-alert";
 import Statistics from "../shared/statistics";
 
@@ -14,7 +14,8 @@ const PlayerTransactions = () => {
     const Hashids = require('hashids/cjs');
     const hashids = new Hashids('salt-n-pepa');
     const [transactions, setTransactions] = useState([]);
-    const [credits, setCredits] = useState(0);
+    const [statistics, setStatistics] = useState([]);
+    const [alertMsg, setAlertMsg] = useState('No transaction\'s yet!');
 
     useEffect(() => {
         getTransactions(APIRoutes.PlayerTransactions).then(transactions => {
@@ -23,9 +24,9 @@ const PlayerTransactions = () => {
     }, []);
 
     useEffect(() => {
-        getUsers(APIRoutes.GetPlayer).then(player => {
-            setCredits(player.credits);
-        }).catch(x => console.log(x));
+        getPlayerTransactionsStatistics().then(stats => {
+            stats !== null ? setStatistics(stats) : setAlertMsg('No Server');
+        })
     }, []);
 
     const rows = transactions.length !== 0 ? [...transactions].reverse().map(transaction => ({
@@ -39,11 +40,11 @@ const PlayerTransactions = () => {
         <StatisticsWrapper>
             {transactions.length !== 0 ?
                 <>
-                    <Statistics style={statisticsAlertStyle.transactions} data={transactionsStatisticsData({ transactions, credits })} />
+                    <Statistics style={statisticsAlertStyle.transactions} data={transactionsStatisticsData(statistics)} />
                     <Box style={{ height: '55vh', width: '30%' }}>
                         <DataGrid sx={{ backgroundColor: '#d0d3d5' }} pageSize={5} rowsPerPageOptions={[5]} rows={rows} columns={playerTansactionsColumns} />
                     </Box>
-                </> : <NoDataAlert msg={'No transaction\'s yet!'} />
+                </> : <NoDataAlert msg={alertMsg} />
             }
         </StatisticsWrapper>
     )

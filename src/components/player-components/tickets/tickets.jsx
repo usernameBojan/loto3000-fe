@@ -16,7 +16,8 @@ const PlayerTicketsTabular = props => {
         details: hashids.encode(ticket.id * 9999),
         status: Date.parse(ticket.draw.drawTime) < Date.parse(date) && ticket.prize < 3 ? 'Failed'
             : ticket.prize >= 3 ? 'Winning' : 'Active',
-        prize: Date.parse(ticket.draw.drawTime) > Date.parse(date) ? 'Ticket is still active' : Prizes[ticket.prize - 1]
+        prize: Date.parse(ticket.draw.drawTime) > Date.parse(date) ? 'Ticket is still active' 
+            : ticket.prize < 3 ? 'None' : Prizes[ticket.prize - 1]
     })) : [];
 
     return <DataGrid sx={{ backgroundColor: '#d0d3d5', width: '100%' }} pageSize={5} rowsPerPageOptions={[5]} rows={rows} columns={ticketsColumns} />

@@ -4,19 +4,18 @@ import React, { useEffect, useState } from "react";
 import { ticketsStatisticsDataByAdmin } from "../../consts/helpers/statistics-data";
 import { APIRoutes } from "../../consts/routes/api-routes";
 import { statisticsAlertStyle, StatisticsWrapper } from "../../consts/styles/statistics-style/statistics-style";
-import { getTickets } from "../../services/tickets-service";
+import { getTickets, getTicketsStatistics } from "../../services/tickets-service";
 import NoDataAlert from "../shared/no-data-alert";
 import Statistics from "../shared/statistics";
 import TicketsByAdminTabular from "./tickets/tickets-tabular";
 
 const TicketsByAdmin = () => {
+    const currentTime = new Date();
     const [tickets, setTickets] = useState([]);
     const [allTickets, setAllTickets] = useState([]);
-    const [activeTickets, setActiveTickets] = useState([]);
-    const [pastTickets, setPastTickets] = useState([]);
-    const [registeredPlayerTickets, setRegisteredPlayerTickets] = useState([]);
-    const [nonregisteredPlayerTickets, setNonRegisteredPlayerTickets] = useState([]);
+    const [statistics, setStatistics] = useState([]);
     const [isDisplayed, setIsDisplayed] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('No tickets yet!');
 
     useEffect(() => {
         getTickets(APIRoutes.AllTickets).then(tickets => {
@@ -25,30 +24,10 @@ const TicketsByAdmin = () => {
     }, []);
 
     useEffect(() => {
-        getTickets(APIRoutes.ActiveTickets).then(tickets => {
-            setActiveTickets(tickets);
-        }).catch(x => console.log(x));
+        getTicketsStatistics().then(stats => {
+            stats !== null ? setStatistics(stats) : setAlertMsg('No Server Response!');
+        })
     }, []);
-
-    useEffect(() => {
-        getTickets(APIRoutes.PastTickets).then(tickets => {
-            setPastTickets(tickets);
-        }).catch(x => console.log(x));
-    }, []);
-
-    useEffect(() => {
-        getTickets(APIRoutes.RegisteredPlayersTickets).then(tickets => {
-            setRegisteredPlayerTickets(tickets);
-        }).catch(x => console.log(x));
-    }, []);
-
-    useEffect(() => {
-        getTickets(APIRoutes.NonregisteredPlayersTickets).then(tickets => {
-            setNonRegisteredPlayerTickets(tickets);
-        }).catch(x => console.log(x));
-    }, []);
-
-    const ticketsPlayed = allTickets.length === 0 ? 0 : allTickets.length;
 
     const handleHide = () => setIsDisplayed(false);
 
@@ -58,38 +37,34 @@ const TicketsByAdmin = () => {
     };
 
     const handleActive = () => {
+        const activeTickets = allTickets.filter(el => Date.parse(el.draw.drawTime) > Date.parse(currentTime));
         setTickets(activeTickets);
         setIsDisplayed(true);
     };
 
     const handlePast = () => {
+        const pastTickets = allTickets.filter(el => Date.parse(el.draw.drawTime) < Date.parse(currentTime));
         setTickets(pastTickets);
         setIsDisplayed(true);
     };
 
     const handleRegistered = () => {
+        const registeredPlayerTickets = allTickets.filter(el => el.playerId !== 0);
         setTickets(registeredPlayerTickets);
         setIsDisplayed(true);
     };
 
     const handleNonregistered = () => {
+        const nonregisteredPlayerTickets = allTickets.filter(el => el.playerId === 0);
         setTickets(nonregisteredPlayerTickets);
         setIsDisplayed(true);
     };
 
-    const statisticsData = {
-        allTickets,
-        activeTickets,
-        pastTickets,
-        registeredPlayerTickets,
-        nonregisteredPlayerTickets
-    }
-
     return (
         <StatisticsWrapper>
-            {ticketsPlayed !== 0 ?
+            {statistics.totalTickets !== 0 ?
                 <>
-                    <Statistics style={statisticsAlertStyle.ticketsByAdmin} data={ticketsStatisticsDataByAdmin(statisticsData)} />
+                    <Statistics style={statisticsAlertStyle.ticketsByAdmin} data={ticketsStatisticsDataByAdmin(statistics)} />
                     <Box style={{ display: 'flex', flexDirection: 'column', width: '25%', padding: '15px' }}>
                         <Button
 
@@ -141,7 +116,7 @@ const TicketsByAdmin = () => {
                         <TicketsByAdminTabular tickets={tickets} />
                     </Box>
                 </>
-                : <NoDataAlert msg={'No tickets yet!'} />
+                : <NoDataAlert msg={alertMsg} />
             }
         </StatisticsWrapper>
     )

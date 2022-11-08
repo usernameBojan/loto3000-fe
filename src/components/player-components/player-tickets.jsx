@@ -5,16 +5,18 @@ import { ticketsStatisticsData } from "../../consts/helpers/statistics-data";
 import { APIRoutes } from "../../consts/routes/api-routes";
 import { statisticsAlertStyle, StatisticsWrapper } from "../../consts/styles/statistics-style/statistics-style";
 import { getTickets } from "../../services/tickets-service";
+import { getPlayerTicketsStatistics } from "../../services/user-service";
 import NoDataAlert from "../shared/no-data-alert";
 import Statistics from "../shared/statistics";
 import PlayerTicketsTabular from "./tickets/tickets";
 
 const PlayerTickets = () => {
+    const currentTime = new Date();
     const [tickets, setTickets] = useState([]);
     const [allTickets, setPlayerTickets] = useState([]);
-    const [activeTickets, setActiveTickets] = useState([]);
-    const [pastTickets, setPastTickets] = useState([]);
+    const [statistics, setStatistics] = useState([]);
     const [isDisplayed, setIsDisplayed] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('You still haven\'t played any tickets!');
 
     useEffect(() => {
         getTickets(APIRoutes.PlayerTickets).then(tickets => {
@@ -23,22 +25,12 @@ const PlayerTickets = () => {
     }, []);
 
     useEffect(() => {
-        getTickets(APIRoutes.PlayerActiveTickets).then(tickets => {
-            setActiveTickets(tickets);
+        getPlayerTicketsStatistics().then(stats => {
+            stats !== null ? setStatistics(stats) : setAlertMsg('No Server Response!');
         }).catch(x => console.log(x));
     }, []);
 
-    useEffect(() => {
-        getTickets(APIRoutes.PlayerPastTickets).then(tickets => {
-            setPastTickets(tickets);
-        }).catch(x => console.log(x));
-    }, []);
-
-    const ticketsPlayed = allTickets.length === 0 ? 0 : allTickets.length;
-
-    const handleHide = () => {
-        setIsDisplayed(false);
-    };
+    const handleHide = () => setIsDisplayed(false);
 
     const handleAllTickets = () => {
         setTickets(allTickets);
@@ -46,25 +38,28 @@ const PlayerTickets = () => {
     };
 
     const handleActiveTickets = () => {
+        const activeTickets = allTickets.filter(el => Date.parse(el.draw.drawTime) > Date.parse(currentTime));
         setTickets(activeTickets);
         setIsDisplayed(true);
     };
 
     const handlePastTickets = () => {
+        const pastTickets = allTickets.filter(el => Date.parse(el.draw.drawTime) < Date.parse(currentTime));
         setTickets(pastTickets);
         setIsDisplayed(true);
     };
 
     const handleWinningTickets = () => {
-        setTickets(pastTickets.filter(el => el.prize >= 3));
+        const winningTickets = allTickets.filter(el => el.prize >= 3);
+        setTickets(winningTickets);
         setIsDisplayed(true);
     }
 
     return (
         <StatisticsWrapper>
-            {ticketsPlayed !== 0 ?
+            {statistics.ticketsPlayed !== 0 ?
                 <>
-                    <Statistics style={statisticsAlertStyle.tickets} data={ticketsStatisticsData({ allTickets, activeTickets, pastTickets })} />
+                    <Statistics style={statisticsAlertStyle.tickets} data={ticketsStatisticsData({ ...statistics, allTickets })} />
                     <Box style={{ display: 'flex', flexDirection: 'column', width: '20%', padding: '50px' }}>
                         <Button
                             sx={{ marginRight: '10px', marginBottom: '20px' }}
@@ -105,7 +100,7 @@ const PlayerTickets = () => {
                     <Box style={{ display: isDisplayed ? 'block' : 'none', height: '55vh', width: '75%' }}>
                         <PlayerTicketsTabular tickets={tickets} />
                     </Box>
-                </> : <NoDataAlert msg={'You still haven\'t played any tickets!'} />
+                </> : <NoDataAlert msg={alertMsg} />
             }
         </StatisticsWrapper>
     )

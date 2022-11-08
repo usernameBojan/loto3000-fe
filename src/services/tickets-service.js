@@ -29,3 +29,12 @@ export const getNonregisteredPlayerTicket = async id => {
         return null;
     }
 }
+
+export const getTicketsStatistics = async () => {
+    try {
+        const result = await LotoApi.get(APIRoutes.TicketsStatistics, {Headers: authHeader()});
+        return result.data;
+    } catch (err) {
+        return null;
+    }
+}
