@@ -5,8 +5,10 @@ import { TicketWrapper } from "../../../consts/styles/ticket/ticket";
 
 const CreateTicket = ({ ticketCombination }) => {
     const [combination, setCombination] = useState([]);
-    
+    const token = JSON.parse(localStorage.getItem('token'));
     const ticketNumbers = Array.from({ length: 37 }, (_, i) => i + 1);
+
+    const ticketBtnCta = token ? 'Create Ticket' : 'Choose Combination';
 
     const handleClick = e => {
         if (!combination.includes(e.target.value)) {
@@ -55,7 +57,7 @@ const CreateTicket = ({ ticketCombination }) => {
                     disabled={combination.length !== 7 ? true : false}
                     onClick={handleSelect}
                 >
-                    Create Ticket
+                    {ticketBtnCta}
                 </Button>
             </Box>
         </>

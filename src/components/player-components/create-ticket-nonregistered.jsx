@@ -111,18 +111,14 @@ const CreateTicketNonregisteredPlayer = () => {
                         <CreateTicket ticketCombination={getTicket} />
                     </Box>
                     <Box sx={{ display: openDeposit ? 'block' : 'none' }}>
-                        <Alert
-                            severity={fullNameCardHolderComparison ? 'success' : 'warning'}
-                            sx={{ display: 'flex', justifyContent: 'center', margin: '75px auto -9%', width: '33%' }}
-                        >
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '75px auto -9%', width: '33%'}}>
+                        <Alert sx={{margin: '5px'}} severity={fullNameCardHolderComparison ? 'success' : 'warning'}>
                             <AlertTitle>Card Holder name must be same as name entered above!</AlertTitle>
                         </Alert>
-                        <Alert
-                            severity={validateTicketPrice ? 'success' : 'warning'}
-                            sx={{ display: 'flex', justifyContent: 'center', margin: '75px auto -9%', width: '33%' }}
-                        >
+                        <Alert sx={{margin: '5px'}} severity={validateTicketPrice ? 'success' : 'warning'}>
                             <AlertTitle>Ticket price for nonregistered users is 5!</AlertTitle>
                         </Alert>
+                        </Box>
                         <Deposit deposit={getDeposit} />
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                             <Button
@@ -131,7 +127,7 @@ const CreateTicketNonregisteredPlayer = () => {
                                 sx={{ display: openCreate ? 'block' : 'none', backgroundColor: '#5cb85c', color: '#292b2c', margin: '-7.5% auto 5px', width: '30%' }}
                                 onClick={handleSubmit}
                             >
-                                Create Ticket
+                                Deposit and Create Ticket
                             </Button>
                         </Box>
                     </Box>

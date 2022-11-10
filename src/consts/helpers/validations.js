@@ -22,6 +22,8 @@ export const validateDepositAmount = input => parseInt(input) >= 5;
 
 export const validateDepositAmountNonregistered = input => parseInt(input) === 5;
 
+export const validateCardDate = date => Date.parse(date) > Date.parse(new Date());
+
 export const validateAge = dateOfBirth => {
     let age = 0;
 

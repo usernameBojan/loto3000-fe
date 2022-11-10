@@ -7,7 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DepositInputs, DepositInputValues } from "../../../consts/helpers/deposit-inputs";
 import { FormWrapper } from "../../../consts/styles/forms/forms-style";
-import { validateCreditCardFormat, validateCvv2Cvc2Format, validateEmptyString, validateDepositAmount, validateDepositAmountNonregistered } from "../../../consts/helpers/validations";
+import { validateCreditCardFormat, validateCvv2Cvc2Format, validateEmptyString, validateDepositAmount, validateDepositAmountNonregistered, validateCardDate } from "../../../consts/helpers/validations";
 
 const Deposit = ({ deposit }) => {
     const [inputValues, setInputValues] = useState({ ...DepositInputValues });
@@ -21,8 +21,10 @@ const Deposit = ({ deposit }) => {
     const depositValidation = token ? 
         validateDepositAmount(inputValues.depositAmount) : validateDepositAmountNonregistered(inputValues.depositAmount);
 
+    const depositBtnCta = token ? 'Deposit' : 'Submit Card Info';
+
     const validate = validateEmptyString(inputValues.cardHolder) && validateCreditCardFormat(inputValues.cardNumber) &&
-        validateCvv2Cvc2Format(inputValues.cvvCode) && depositValidation;
+        validateCvv2Cvc2Format(inputValues.cvvCode) && depositValidation && validateCardDate(expDate.$d);
 
     const DepositValues = {
         cardHolderName: inputValues.cardHolder,
@@ -71,7 +73,7 @@ const Deposit = ({ deposit }) => {
                     sx={{ backgroundColor: '#5cb85c', color: '#292b2c', margin: '5px' }}
                     onClick={handleClick}
                 >
-                    Deposit
+                    {depositBtnCta}
                 </Button>
             </FormWrapper>
         </>
