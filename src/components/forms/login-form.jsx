@@ -8,7 +8,7 @@ import { FormInputsWrapper, FormWrapper } from "../../consts/styles/forms/forms-
 const LoginForm = ({ onSubmit }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    
     const handleSubmit = () => onSubmit({ username, password });
 
     return (
