@@ -4,18 +4,21 @@ export const DepositInputs = [
         name: 'cardHolder',
         type: 'text',
         label: 'Card Holder Name',
+        placeholder: ''
     },
     {
         id: 2,
         name: 'cardNumber',
         type: 'text',
         label: 'Credit Card Number',
+        placeholder: ''
     },
     {
         id: 3,
         name: 'cvvCode',
         type: 'text',
         label: 'CVV/CVV2 Code',
+        placeholder: ''
     }
     ,
     {
@@ -23,6 +26,7 @@ export const DepositInputs = [
         name: 'depositAmount',
         type: 'number',
         label: 'Deposit Amount',
+        placeholder: 'Minimum amount is 5'
     },
 ];
 

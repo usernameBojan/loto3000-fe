@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NonregisteredTicketCreatedSuccessValues } from "../../consts/helpers/success-values";
+import { compareInputs, validateDepositAmountNonregistered, validateEmailInput, validateEmptyString } from "../../consts/helpers/validations";
 import { APIRoutes } from "../../consts/routes/api-routes";
 import { AppRoutes } from "../../consts/routes/app-routes";
 import { FormWrapper, SuccessAlertWrapper } from "../../consts/styles/forms/forms-style";
@@ -26,11 +27,12 @@ const CreateTicketNonregisteredPlayer = () => {
 
     if (JSON.parse(localStorage.getItem('token'))) navigate(AppRoutes.BASE);
 
-    const handlePersonalInfo = () => {
-        if (fullname !== '' && email !== '') {
-            setOpenTicket(true);
-        }
-    }
+    const validatePersonalInfo = validateEmptyString(fullname) && validateEmailInput(email);
+    const fullNameCardHolderComparison = compareInputs(fullname, deposit.cardHolderName);
+    const validateTicketPrice = validateDepositAmountNonregistered(deposit.depositAmount);
+    const validateSubmit = fullNameCardHolderComparison && validateTicketPrice;
+
+    const handlePersonalInfo = () => validatePersonalInfo ? setOpenTicket(true) : setOpenTicket(false);
 
     const getTicket = ticket => {
         setCombinationNumbers(ticket);
@@ -99,6 +101,7 @@ const CreateTicketNonregisteredPlayer = () => {
                             onChange={e => setEmail(e.target.value)}
                         />
                         <Button
+                            disabled={validatePersonalInfo ? false : true}
                             onClick={handlePersonalInfo}
                             sx={{ backgroundColor: '#0275d8', color: '#292b2c' }}>
                             Enter and Proceed
@@ -109,14 +112,21 @@ const CreateTicketNonregisteredPlayer = () => {
                     </Box>
                     <Box sx={{ display: openDeposit ? 'block' : 'none' }}>
                         <Alert
-                            severity="warning"
+                            severity={fullNameCardHolderComparison ? 'success' : 'warning'}
                             sx={{ display: 'flex', justifyContent: 'center', margin: '75px auto -9%', width: '33%' }}
                         >
                             <AlertTitle>Card Holder name must be same as name entered above!</AlertTitle>
                         </Alert>
+                        <Alert
+                            severity={validateTicketPrice ? 'success' : 'warning'}
+                            sx={{ display: 'flex', justifyContent: 'center', margin: '75px auto -9%', width: '33%' }}
+                        >
+                            <AlertTitle>Ticket price for nonregistered users is 5!</AlertTitle>
+                        </Alert>
                         <Deposit deposit={getDeposit} />
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                             <Button
+                                disabled={validateSubmit ? false : true}
                                 variant='filled'
                                 sx={{ display: openCreate ? 'block' : 'none', backgroundColor: '#5cb85c', color: '#292b2c', margin: '-7.5% auto 5px', width: '30%' }}
                                 onClick={handleSubmit}

@@ -7,6 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DepositInputs, DepositInputValues } from "../../../consts/helpers/deposit-inputs";
 import { FormWrapper } from "../../../consts/styles/forms/forms-style";
+import { validateCreditCardFormat, validateCvv2Cvc2Format, validateEmptyString, validateDepositAmount, validateDepositAmountNonregistered } from "../../../consts/helpers/validations";
 
 const Deposit = ({ deposit }) => {
     const [inputValues, setInputValues] = useState({ ...DepositInputValues });
@@ -14,6 +15,14 @@ const Deposit = ({ deposit }) => {
 
     const handleInputChange = e => setInputValues({ ...inputValues, [e.target.name]: e.target.value });
     const handleDateChange = date => setExpDate(date);
+
+    const token = JSON.parse(localStorage.getItem('token'));
+
+    const depositValidation = token ? 
+        validateDepositAmount(inputValues.depositAmount) : validateDepositAmountNonregistered(inputValues.depositAmount);
+
+    const validate = validateEmptyString(inputValues.cardHolder) && validateCreditCardFormat(inputValues.cardNumber) &&
+        validateCvv2Cvc2Format(inputValues.cvvCode) && depositValidation;
 
     const DepositValues = {
         cardHolderName: inputValues.cardHolder,
@@ -34,6 +43,7 @@ const Deposit = ({ deposit }) => {
                             key={input.id * 1000}
                             required
                             label={input.label}
+                            placeholder={input.placeholder}
                             name={input.name}
                             type={input.type}
                             sx={{ padding: '10px' }}
@@ -56,6 +66,7 @@ const Deposit = ({ deposit }) => {
                     </LocalizationProvider>
                 </Box>
                 <Button
+                    disabled={validate ? false : true}
                     variant='filled'
                     sx={{ backgroundColor: '#5cb85c', color: '#292b2c', margin: '5px' }}
                     onClick={handleClick}
